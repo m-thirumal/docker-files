@@ -6,8 +6,8 @@ services:
       - "12345:12345"  
     volumes:
       - /Users/thirumal/git/oauth-authorization-server/logs:/logs  # host:container
-      - ./alloy-config.yaml:/etc/alloy/alloy-config.yaml:ro
-    command: run /etc/alloy/alloy-config.yaml
+      - ./alloy-config.alloy:/etc/alloy/alloy-config.alloy:ro
+    command: run /etc/alloy/alloy-config.alloy
     networks:
       - grafana-net
 

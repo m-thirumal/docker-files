@@ -8,6 +8,8 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=thirumal
     volumes:
       - grafana-storage:/var/lib/grafana
+    networks:
+      - grafana-net
     depends_on:
       - loki
 
@@ -20,7 +22,13 @@ services:
       - loki-data:/var/lib/loki
       - ./loki-config.yaml:/etc/loki/local-config.yaml:ro
     command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - grafana-net
 
 volumes:
   grafana-storage:
   loki-data:
+
+networks:
+  grafana-net:
+    driver: bridge
