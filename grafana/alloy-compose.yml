@@ -1,0 +1,17 @@
+services:
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
+    ports:
+      - "12345:12345"  
+    volumes:
+      - /Users/thirumal/git/oauth-authorization-server/logs:/logs  # host:container
+      - ./alloy-config.yaml:/etc/alloy/alloy-config.yaml:ro
+    command: run /etc/alloy/alloy-config.yaml
+    networks:
+      - grafana-net
+
+networks:
+  grafana-net:
+    driver: bridge
+

@@ -1,0 +1,15 @@
+server:
+  log_level: info
+  listen_address: 0.0.0.0   # listen on all interfaces
+  listen_port: 12345        # must match the exposed port in docker-compose
+
+
+loki:
+  url: http://loki:3100/loki/api/v1/push  # use Loki service name if in same Docker network
+
+sources:
+  - name: OAuth2.1
+    path: /logs/*.log   # path inside container
+    labels:
+      job: OAuth2.1
+      env: dev
