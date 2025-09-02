@@ -1,0 +1,26 @@
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=thirumal
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - loki
+
+  loki:
+    image: grafana/loki:3.5.3
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki-data:/var/lib/loki
+      - ./loki-config.yaml:/etc/loki/local-config.yaml:ro
+    command: -config.file=/etc/loki/local-config.yaml
+
+volumes:
+  grafana-storage:
+  loki-data:
