@@ -14,27 +14,42 @@ loki.source.file "local_files" {
 // Transformation: pull some data out of the log message, and turn it into a label
 
 loki.process "add_new_label" {
-    stage.logfmt {
-        mapping = {
-            "extracted_level" = "level",
-        }
-    }
+  stage.regex {
+    expression = "^(?P<ts>\\S+)\\s+(?P<level>INFO|DEBUG|WARN|ERROR)\\s+(?P<pid>\\d+)\\s+---\\s+\\[(?P<thread>[^]]+)\\]\\s+\\[(?P<executor>[^]]+)\\]\\s+(?P<class>[^:]+)\\s+:\\s(?P<msg>.*)$"
+  }
 
-    // Add the value of "extracted_level" from the extracted map as a "level" label
-    stage.labels {
-        values = {
-            "level" = "extracted_level",
-             "job"   = "OAuth2.1",
-        }
+  // Add parsed fields as labels
+  stage.labels {
+    values = {
+      "level"   = "level",
+      "thread"  = "thread",
+      "executor"= "executor",
+      "class"   = "class",
+      "job"     = "OAuth2.1",
     }
+  }
 
-    // The next link in the chain is the local_loki "receiver" (receives the telemetry)
-    forward_to = [loki.write.local_loki.receiver]
+  forward_to = [loki.write.local_loki.receiver]
 }
+
+
 
 // Anything that comes into this component gets written to the loki remote API
 loki.write "local_loki" {
     endpoint {
         url = "http://loki:3100/loki/api/v1/push"
     }
+}
+
+//Alloy log
+logging {
+  level    = "debug"
+  format   = "json"
+  write_to = [loki.write.alloy_logs.receiver]
+}
+
+loki.write "alloy_logs" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
 }
